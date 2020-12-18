@@ -1,0 +1,40 @@
+# Create directory to hold backup of existing bash config files
+bdir=.bashupbash
+mkdir -p $bdir
+
+function backup() {
+  # echo "backup $1"
+
+  if [ -f $1 ]; then
+    mv $1 $bdir
+  fi
+}
+
+# Backup existing bash config files
+backup ~/.bashrc
+backup ~/.bash_profile
+backup ~/.bash_aliases
+backup ~/.bash_env
+backup ~/.bash_fn
+backup ~/.bash_ssh
+backup ~/.bashrc.bak.bash_it
+
+function link() {
+  if [ -f $1 ]; then
+    ln -s $1 $2
+  fi
+}
+
+# Link confi files to home directory
+link ~/.mybash/.bashrc ~/.bashrc
+link ~/.mybash/.bashrc ~/.bash_profile
+link ~/.mybash/.bash_aliases ~/.bash_aliases
+link ~/.mybash/.bash_env ~/.bash_env
+link ~/.mybash/.bash_fn ~/.bash_fn
+link ~/.mybash/.bash_ssh ~/.bash_ssh
+link ~/.mybash/.bashrc.bak.bash_it ~/.bashrc.bak.bash_it
+
+# Unset functions
+unset -f backup
+unset -f link
+

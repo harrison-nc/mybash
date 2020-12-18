@@ -1,0 +1,128 @@
+# Git functions
+function gtcm(){
+  git commit -m $*
+}
+
+function gtsw(){
+  git switch $*
+}
+
+# Jvm function
+function jvm(){
+  if [ -z "$1" ]; then
+    java -version
+  else
+    local version=$1
+    usejava.sh $version
+    mysource
+  fi
+}
+
+# List files and directory functions
+function ls_gdf(){
+  alias ls='ls -F --group-directories-first --color'
+}
+
+function ls_gdfnc() {
+  alias ls='ls -F --group-directories-first'
+}
+
+function no_dir_color(){
+  export LS_OPTIONS='--color=auto'
+  eval "$(dircolors -b)"
+  alias ls='ls $LS_OPTIONS'
+}
+
+function no_dir_color_g(){
+  alias ls='ls -F -G'
+}
+
+# Custom prompt functions
+function ps1(){
+  local reset="\[\e[0m\]"
+  # local user="\u"
+  local user="Bob"
+  local host="\h"
+  local path="\w"
+  local time="\d \t"
+  local new_line="\n"
+  local prmpt="\$"
+  local bright_yellow_fg="\[\e[0;93m\]"
+  local bright_yellow_bold_fg="\[\e[1;93m\]"
+  local bright_magenta_fg="\[\e[95m\]"
+  local blue_bold_fg="\[\e[1;34m\]"
+  local blue_fg="\[\e[0;34m\]"
+  local gps1=$(__git_ps1)
+
+  PS1="$bright_yellow_bold_fg# $host$bright_yellow_fg$path$gps1$new_line$bright_yellow_bold_fg$prmpt$reset "
+}
+
+function ps2(){
+  local dir=$(pwd)
+  
+  if [ ${#dir} -gt 1 ]; then
+    # Drop the first character, which should be '/'
+    dir=${dir:1}
+    # Replace the full path of user home with '~'
+    dir=${dir/home\/maxwell/\~}
+    # Print the unicode character '\u2771', which should return the glyph
+    local char=$(echo -e "\u276f")
+    dir=${dir////$char}
+    # Add the unicode character to the end of the path
+    # if the path length is greater than one
+    if [ ${#dir} -gt 1 ]; then
+      dir=$dir$char
+    fi
+  fi
+    
+  local hostname=maxwell
+  # The host
+  local host="\[\e[01;32m\]$hostname\[\e[00m\]"
+  # Git, working directory and new line with shell prompt
+  local git_ps1=$(__git_ps1)
+  local pwd="\[\e[01;34m\]$dir$git_ps1\[\e[00m\]"
+  local cmd_prompt="\n\$ "
+  # Set the PS1
+  PS1="$host:$pwd$cmd_prompt"
+  # PROMPT_COMMAND='__git_ps1
+  #                "\[\e[01;32m\]\h\[\e[00m\]:\[\e[01;34m\]$dir\[\e[00m\]" "\n\$ "'
+}
+
+function ps1small() {
+  local hostname=maxwell
+  
+  # The host
+  local host="\[\e[01;32m\]$hostname\[\e[00m\]"
+
+  # Print the unicode character '\u2771', which should return the glyph
+  local char=$(echo -e "\u276f")
+  
+  # Git, working directory and new line with shell prompt
+  local git_ps1=$(__git_ps1)
+  local pwd="\[\e[01;34m\]\W$char$git_ps1\[\e[00m\]"
+  local cmd_prompt="\n\$ "
+  
+  # Set the PS1
+  PS1="$host:$pwd$cmd_prompt"
+}
+
+useps() {
+  PROMPT_COMMAND=$1
+}
+
+# Toggle line wrap
+lwoff() {
+  setterm -linewrap off
+}
+
+lwon() {
+  setterm -linewrap on
+}
+
+myssh() {
+  if [ -f ~/.bash_ssh ]; then
+     . ~/.bash_ssh
+  else
+     echo "~/.bash_ssh file not found"
+  fi
+}
